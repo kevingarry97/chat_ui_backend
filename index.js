@@ -20,6 +20,9 @@ app.use(parser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000
 app.use(compression());
 app.use(helmet());
 
+app.get('/', (req, res) => {
+  res.send('Hello World')
+})
 app.use('/api', userRoutes);
 app.use('/api', chatRoutes);
 
