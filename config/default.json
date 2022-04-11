@@ -1,0 +1,4 @@
+{
+  "jwtPrivatekey": "",
+  "db": "mongodb+srv://kevin:Abcd123@cluster0.yery4.mongodb.net/chatApp?retryWrites=true&w=majority"
+}
