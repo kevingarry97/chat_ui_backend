@@ -75,7 +75,7 @@ router.post('/auth/reset/:token', async (req, res) => {
 
   const mailOptions = {
     to: user.email,
-    from: "kevingarry99@gmail.com",
+    from: process.env.FROM_EMAIL,
     subject: "Your password has been changed",
     text: `Hi ${user.username} \n 
       This is a confirmation that the password for your account ${user.email} has just been changed.\n`
@@ -120,7 +120,7 @@ async function sendVerificationEmail(users, req, res) {
 
     let subject = "Account Verification Token";
     let to = users.email;
-    let from = "kevingarry99@gmail.com";
+    let from = process.env.FROM_EMAIL;
     // let link = "links to";
     let link = "http://" + "localhost:3000/auth/" + payload.token;
     let html = `<p>Hi ${users.username}<p><br><p>Please click on the following <a href="${link}">link</a> to verify your account.</p> 
