@@ -1,4 +1,6 @@
 {
   "jwtPrivatekey": "chat_jwtPrivatekey",
-  "db": "chatApp_db"
+  "db": "chatApp_db",
+  "fromEmail": "fromEmail",
+  "sendgridApiKey": "sendgridApiKey"
 }

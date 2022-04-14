@@ -8,6 +8,8 @@ const bcryptjs = require('bcryptjs');
 const router = express.Router();
 const { sendEmail } = require('../utils/index');
 const crypto = require('crypto');
+const config = require('config');
+const fromEmail = config.get('fromEmail');
 
 router.get('/user', async (req, res) => {
   const user = await User.find();
@@ -72,10 +74,9 @@ router.post('/auth/reset/:token', async (req, res) => {
   user.resetPasswordExpires = undefined;
 
   await user.save()
-
   const mailOptions = {
     to: user.email,
-    from: process.env.FROM_EMAIL,
+    from: fromEmail,
     subject: "Your password has been changed",
     text: `Hi ${user.username} \n 
       This is a confirmation that the password for your account ${user.email} has just been changed.\n`
@@ -120,7 +121,7 @@ async function sendVerificationEmail(users, req, res) {
 
     let subject = "Account Verification Token";
     let to = users.email;
-    let from = process.env.FROM_EMAIL;
+    let from = fromEmail;
     // let link = "links to";
     let link = "http://" + "localhost:3000/auth/" + payload.token;
     let html = `<p>Hi ${users.username}<p><br><p>Please click on the following <a href="${link}">link</a> to verify your account.</p> 
