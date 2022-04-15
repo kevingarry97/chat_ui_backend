@@ -1,6 +1,6 @@
 {
   "jwtPrivatekey": "",
   "db": "mongodb+srv://kevin:Abcd123@cluster0.yery4.mongodb.net/chatApp?retryWrites=true&w=majority",
-  "fromEmail": "kevingarry99@gmail.com",
+  "fromEmail": "kevingarry96@gmail.com",
   "sendgridApiKey": ""
 }
