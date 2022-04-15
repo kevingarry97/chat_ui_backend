@@ -29,11 +29,15 @@ const userSchema = new mongoose.Schema({
   },
   resetPasswordExpires: {
     type: Date
+  },
+  createdAt: {
+    type: Date(),
+    default: Date.now()
   }
 })
 
 userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign({ username: this.username, _id: this._id, email: this.email, role: this.role, profileUrl: this.profileUrl }, config.get('jwtPrivatekey'))
+  const token = jwt.sign({ username: this.username, _id: this._id, email: this.email, role: this.role, profileUrl: this.profileUrl, isVerified: this.isVerified }, config.get('jwtPrivatekey'))
   return token;
 }
 
