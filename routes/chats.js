@@ -14,12 +14,12 @@ router.get('/chat/:id', auth, async (req, res) => {
 
 router.post('/chat', auth, async (req, res) => {
   const { user: receiver, message } = req.body
-  let user = await User.findById(receiver);
+  let user = await User.findOne({ room: receiver });
   if (!user) return res.status(404).send('Receiver not found');
 
   let chat = new Chat({
     message,
-    to: user,
+    room: user,
     from: req.user
   })
 

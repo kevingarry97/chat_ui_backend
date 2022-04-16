@@ -8,8 +8,8 @@ const chatSchema = new mongoose.Schema({
   from: {
     type: userSchema
   },
-  to: {
-    type: userSchema
+  room: {
+    type: string
   },
   createdAt: {
     type: Date,
