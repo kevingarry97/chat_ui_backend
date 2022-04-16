@@ -3,6 +3,7 @@ const parser = require('body-parser');
 const db = require('./db/db');
 const userRoutes = require('./routes/users');
 const chatRoutes = require('./routes/chats');
+const blogRoutes = require('./routes/blogs');
 const config = require('config');
 const compression = require('compression');
 const helmet = require('helmet');
@@ -22,6 +23,7 @@ app.use(helmet());
 
 app.use('/api', userRoutes);
 app.use('/api', chatRoutes);
+app.use('/api', blogRoutes);
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => console.log(`Listening to Port ${port} successfully`));
