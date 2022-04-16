@@ -4,8 +4,8 @@ const auth = require('../middleware/auth');
 
 const router = express.Router();
 
-router.get('/chat/:id', auth, async (req, res) => {
-  const chat = await Chat.find({ "to._id": req.params.id });
+router.get('/chat', auth, async (req, res) => {
+  const chat = await Chat.find();
   if (!chat) return res.status(404).send('No Message Found');
 
   res.status(200).send(chat);
