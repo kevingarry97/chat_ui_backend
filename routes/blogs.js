@@ -11,9 +11,10 @@ router.get('/blog', auth, async (req, res) => {
   res.status(200).send(blog);
 })
 
-router.post('/blog', async (req, res) => {
+router.post('/blog', auth, async (req, res) => {
   const blog = new Blog({
-    text: req.body.text
+    text: req.body.text,
+    madeBy: req.user
   })
 
   await blog.save();
@@ -24,7 +25,8 @@ router.post('/blog', async (req, res) => {
 router.put('/blog/:id', auth, async (req, res) => {
   const blog = await Blog.findByIdAndUpdate(req.params.id,
     {
-      text: req.body.text
+      text: req.body.text,
+      madeBy: req.user
     },
     {
       new: true
