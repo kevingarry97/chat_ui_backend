@@ -13,7 +13,7 @@ router.get('/blog', auth, async (req, res) => {
 
 router.post('/blog', async (req, res) => {
   const blog = new Blog({
-    text: req.params.text
+    text: req.body.text
   })
 
   await blog.save();
@@ -22,11 +22,14 @@ router.post('/blog', async (req, res) => {
 })
 
 router.put('/blog/:id', auth, async (req, res) => {
-  const blog = await Blog.findByIdAndUpdate(req.params.id, {
-    text: req.body.text
-  }, {
-    new: true
-  });
+  const blog = await Blog.findByIdAndUpdate(req.params.id,
+    {
+      text: req.body.text
+    },
+    {
+      new: true
+    }
+  );
 
   if (!blog) return res.status(400).send('Not Blog with ID Found');
 

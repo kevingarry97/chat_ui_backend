@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { userSchema } = require('./user');
+const { roomSchema } = require('./room');
 
 const chatSchema = new mongoose.Schema({
   message: {
@@ -9,7 +10,7 @@ const chatSchema = new mongoose.Schema({
     type: userSchema
   },
   room: {
-    type: String
+    type: roomSchema
   },
   createdAt: {
     type: Date,

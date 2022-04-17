@@ -4,6 +4,7 @@ const db = require('./db/db');
 const userRoutes = require('./routes/users');
 const chatRoutes = require('./routes/chats');
 const blogRoutes = require('./routes/blogs');
+const roomRoutes = require('./routes/rooms');
 const config = require('config');
 const compression = require('compression');
 const helmet = require('helmet');
@@ -24,6 +25,7 @@ app.use(helmet());
 app.use('/api', userRoutes);
 app.use('/api', chatRoutes);
 app.use('/api', blogRoutes);
+app.use('/api', roomRoutes);
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => console.log(`Listening to Port ${port} successfully`));
