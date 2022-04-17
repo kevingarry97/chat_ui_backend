@@ -91,7 +91,7 @@ router.post('/auth/requestReset', async (req, res) => {
   let to = user.email;
   let from = fromEmail;
   // let link = "links to";
-  let link = "http://" + "localhost:3000/auth/passwordReset" + resetToken + '/' + user._id;
+  let link = "http://" + "localhost:3000/auth/passwordReset/" + resetToken + '/' + user._id;
   let html = `<p>Hi ${user.username}<p><br><p>Your request to reset your password <br></p> 
                   <p>Please, <a href="${link}">link</a> click the link below to reset your password`;
   await sendEmail({ to, from, subject, html });
