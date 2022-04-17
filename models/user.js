@@ -24,12 +24,6 @@ const userSchema = new mongoose.Schema({
   profileUrl: {
     type: String
   },
-  resetPasswordToken: {
-    type: String,
-  },
-  resetPasswordExpires: {
-    type: Date
-  },
   createdAt: {
     type: Date,
     default: Date.now()
@@ -40,11 +34,6 @@ userSchema.methods.generateAuthToken = function () {
   const token = jwt.sign({ username: this.username, _id: this._id, email: this.email, role: this.role, profileUrl: this.profileUrl, isVerified: this.isVerified }, config.get('jwtPrivatekey'))
   return token;
 }
-
-userSchema.methods.generatePasswordReset = function () {
-  this.resetPasswordToken = crypto.randomBytes(20).toString('hex');
-  this.resetPasswordExpires = Date.now() + 3600000; //expires in an hour
-};
 
 const User = mongoose.model('User', userSchema);
 

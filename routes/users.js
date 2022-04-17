@@ -53,7 +53,8 @@ router.post('/user', upload.single('file'), async (req, res) => {
   user.password = await bcryptjs.hash(user.password, salt);
 
   await user.save();
-  user.generatePasswordReset();
+  console.log(user)
+  // user.generatePasswordReset();
   await sendVerificationEmail(user, req, res);
 
   const token = user.generateAuthToken();
@@ -65,26 +66,63 @@ router.post('/user', upload.single('file'), async (req, res) => {
 
 })
 
-router.post('/auth/reset/:token', async (req, res) => {
-  let user = await User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } })
-  if (!user) return res.status(401).send('Password reset token is invalid or has expired.');
+router.post('/auth/requestReset', async (req, res) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) return res.status(404).send('User Email can\'t be found');
 
-  user.password = req.body.password;
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpires = undefined;
+  let token = await Tokens.findOne({ "user._id": user._id });
+  if (!token) {
+    token = await new Token({
+      user,
+      token: crypto.randomBytes(32).toString("hex"),
+    }).save();
+  }
 
-  await user.save()
-  const mailOptions = {
-    to: user.email,
-    from: fromEmail,
-    subject: "Your password has been changed",
-    text: `Hi ${user.username} \n 
-      This is a confirmation that the password for your account ${user.email} has just been changed.\n`
-  };
+  await token.deleteOne();
 
-  await sendEmail(mailOptions);
-  console.log('Reset')
+  let resetToken = crypto.randomBytes(20).toString('hex')
+
+  await new Tokens({
+    user,
+    token: resetToken
+  }).save();
+
+  let subject = "Request Password Reset";
+  let to = user.email;
+  let from = fromEmail;
+  // let link = "links to";
+  let link = "http://" + "localhost:3000/auth/passwordReset" + resetToken + '/' + user._id;
+  let html = `<p>Hi ${user.username}<p><br><p>Your request to reset your password <br></p> 
+                  <p>Please, <a href="${link}">link</a> click the link below to reset your password`;
+  await sendEmail({ to, from, subject, html });
+  res.status(200).send('Sent Successfully')
 })
+
+router.post('/auth/resetPassword', async (req, res) => {
+  let { userId, token, password } = req.body;
+
+  let result = await Tokens.findOne({ token });
+  if (!result) res.status(404).send('We were unable to find a valid token. Your token my have expired.');
+
+  if (result.user._id != userId) return res.status(404).send('No User with the token found');
+
+  const salt = await bcryptjs.genSalt(10);
+  password = await bcryptjs.hash(password, salt);
+
+  await User.updateOne(
+    { _id: userId },
+    { $set: { password } },
+    { new: true }
+  );
+
+  let subject = "Password Reset Successfully";
+  let to = result.user.email;
+  let from = fromEmail;
+
+  let html = `<p>Hi ${result.user.username}</p><br><p>Your password has been changed successfully</p>`;
+  await sendEmail({ to, from, subject, html });
+  res.status(200).send('Reset Successfully')
+});
 
 router.get('/auth/verify/:token', async (req, res) => {
   const { token } = req.params;
@@ -108,7 +146,7 @@ router.get('/auth/verify/:token', async (req, res) => {
 
 async function sendVerificationEmail(users, req, res) {
   try {
-    let user = await User.findById(users._id);
+    let user = await User.findById(users);
     if (!user) return res.status(404).send('Not Found User');
 
     let payload = new Tokens({
