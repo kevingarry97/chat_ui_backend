@@ -35,6 +35,7 @@ router.post('/user', upload.single('file'), async (req, res) => {
   const { email, username, password, role } = req.body
   const uploader = async (path) => await cloudinary.upload(path, "File")
 
+  console.log('File ', req.file)
   const file = req.file;
   const { url: profileUrl } = await uploader(file.path);
 
@@ -91,7 +92,7 @@ router.post('/auth/requestReset', async (req, res) => {
   let to = user.email;
   let from = fromEmail;
   // let link = "links to";
-  let link = "http://" + "localhost:3000/auth/passwordReset/" + resetToken + '/' + user._id;
+  let link = "https://" + "authenticateapp.netlify.app/auth/passwordReset/" + resetToken + '/' + user._id;
   let html = `<p>Hi ${user.username}<p><br><p>Your request to reset your password <br></p> 
                   <p>Please, <a href="${link}">link</a> click the link below to reset your password`;
   await sendEmail({ to, from, subject, html });
@@ -161,7 +162,7 @@ async function sendVerificationEmail(users, req, res) {
     let to = users.email;
     let from = fromEmail;
     // let link = "links to";
-    let link = "http://" + "localhost:3000/auth/" + payload.token;
+    let link = "http://" + "authenticateapp.netlify.app/auth/" + payload.token;
     let html = `<p>Hi ${users.username}<p><br><p>Please click on the following <a href="${link}">link</a> to verify your account.</p> 
                   <br><p>If you did not request this, please ignore this email.</p>`;
     await sendEmail({ to, from, subject, html });
