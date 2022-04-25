@@ -8,8 +8,21 @@ const bcryptjs = require('bcryptjs');
 const router = express.Router();
 const { sendEmail } = require('../utils/index');
 const crypto = require('crypto');
+const auth = require('../middleware/auth');
 const config = require('config');
 const fromEmail = config.get('fromEmail');
+
+router.get('/me', auth, async (req, res) => {
+  const user = await User.findById(req.user._id)
+    .select('-password')
+  res.status(200).send(user);
+})
+
+router.get('/me', auth, async (req, res) => {
+  const user = await User.findById(req.user._id)
+    .select('-password')
+  res.status(200).send(user);
+})
 
 router.get('/user', async (req, res) => {
   const user = await User.find();
@@ -92,7 +105,7 @@ router.post('/auth/requestReset', async (req, res) => {
   let to = user.email;
   let from = fromEmail;
   // let link = "links to";
-  let link = "https://" + "authenticateapp.netlify.app/auth/passwordReset/" + resetToken + '/' + user._id;
+  let link = "https://" + "localhost:3000/auth/passwordReset/" + resetToken + '/' + user._id;
   let html = `<p>Hi ${user.username}<p><br><p>Your request to reset your password <br></p> 
                   <p>Please, <a href="${link}">link</a> click the link below to reset your password`;
   await sendEmail({ to, from, subject, html });
@@ -143,6 +156,63 @@ router.get('/auth/verify/:token', async (req, res) => {
   res.status(200).send("The account has been verified. Please log in.");
 })
 
+router.put('/me', auth, async (req, res) => {
+  const {
+    username,
+    email,
+    password,
+    role,
+    isVerified,
+    profileUrl
+  } = req.body;
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id, {
+    username,
+    email,
+    password,
+    role,
+    isVerified,
+    profileUrl
+  }, {
+    new: true
+  }
+  );
+
+  await user.save();
+
+  res.status(200).send(user);
+})
+
+router.put('/me', auth, async (req, res) => {
+  const {
+    username,
+    email,
+    password,
+    role,
+    isVerified,
+    profileUrl
+  } = req.body;
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id, {
+    username,
+    email,
+    password,
+    role,
+    isVerified,
+    profileUrl,
+    createdAt: Date.now()
+  }, {
+    new: true
+  }
+  );
+
+  await user.save();
+
+  res.status(200).send(user);
+})
+
 // User Save
 
 async function sendVerificationEmail(users, req, res) {
@@ -162,7 +232,7 @@ async function sendVerificationEmail(users, req, res) {
     let to = users.email;
     let from = fromEmail;
     // let link = "links to";
-    let link = "http://" + "authenticateapp.netlify.app/auth/" + payload.token;
+    let link = "http://" + "localhost:3000/auth/" + payload.token;
     let html = `<p>Hi ${users.username}<p><br><p>Please click on the following <a href="${link}">link</a> to verify your account.</p> 
                   <br><p>If you did not request this, please ignore this email.</p>`;
     await sendEmail({ to, from, subject, html });
